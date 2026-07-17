@@ -3,7 +3,7 @@ from uuid import UUID
 from datetime import datetime
 
 
-class PlaceSchema(BaseModel):
+class PlaceResponse(BaseModel):
     id: UUID
     name: str
     city: str

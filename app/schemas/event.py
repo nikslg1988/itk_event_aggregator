@@ -1,9 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 from datetime import datetime
 
 
-class EventSchema(BaseModel):
+class EventResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     place_id: UUID
     name: str
@@ -14,4 +16,10 @@ class EventSchema(BaseModel):
     changed_at: datetime
     created_at: datetime
     status_changed_at: datetime
-        
+
+
+class EventListResponse(BaseModel):
+    count: int
+    next: int | None
+    previous: int | None
+    results: list[EventResponse]
