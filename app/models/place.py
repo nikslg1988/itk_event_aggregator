@@ -16,7 +16,7 @@ class Place(Base):
     __tablename__ = "places"
 
     id: Mapped[UUID] = mapped_column(PG_UUID, primary_key=True, default=uuid4)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     city: Mapped[str] = mapped_column(String(255), nullable=False)
     address: Mapped[str] = mapped_column(String(255), nullable=False)
     seats_pattern: Mapped[str] = mapped_column(String(255), nullable=False)
