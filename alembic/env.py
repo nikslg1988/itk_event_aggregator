@@ -19,6 +19,7 @@ if config.config_file_name is not None:
 
 from app.models.event import Event
 from app.models.place import Place
+from app.models.ticket import Ticket
 
 target_metadata = Base.metadata
 

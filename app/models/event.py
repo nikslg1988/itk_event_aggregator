@@ -10,6 +10,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.place import Place
+    from app.models.ticket import Ticket
 
 
 class Event(Base):
@@ -29,3 +30,4 @@ class Event(Base):
     status_changed_at: Mapped[datetime] = mapped_column(nullable=False)
 
     place: Mapped["Place"] = relationship(back_populates="events")
+    ticket: Mapped["Ticket"] = relationship(back_populates="events")
