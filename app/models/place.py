@@ -23,4 +23,4 @@ class Place(Base):
     changed_at: Mapped[datetime] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(nullable=False)
 
-    events: Mapped[list["Event"]] = relationship(back_populates="places")
+    events: Mapped[list["Event"]] = relationship(back_populates="place")
