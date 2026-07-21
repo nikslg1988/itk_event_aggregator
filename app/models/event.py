@@ -1,8 +1,8 @@
-from uuid import UUID, uuid4
 from datetime import datetime
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
-from sqlalchemy import String, ForeignKey, Integer
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

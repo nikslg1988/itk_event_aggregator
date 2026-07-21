@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from app.exceptions.place import PlaceAlreadyExistsError, PlaceNotFoundError
 from app.models.place import Place
 from app.repositories.place import PlaceRepository
-from app.exceptions.place import PlaceAlreadyExistsError, PlaceNotFoundError
 
 
 class PlaceService:

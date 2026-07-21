@@ -1,11 +1,11 @@
 import asyncio
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from alembic import context
 from app.core.config import settings
 from app.db.base import Base
 
@@ -17,9 +17,6 @@ if config.config_file_name is not None:
 
 
 
-from app.models.event import Event
-from app.models.place import Place
-from app.models.ticket import Ticket
 
 target_metadata = Base.metadata
 

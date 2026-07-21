@@ -3,7 +3,14 @@ from uuid import UUID
 
 from httpx import AsyncClient
 
-from app.schemas.clients.events import ProviderEventsPage, ProviderRegistrationRequest, ProviderRegistrationResponse, ProviderSeatsResponse, ProviderUnregisterRequest, ProviderUnregisterResponse
+from app.schemas.clients.events import (
+    ProviderEventsPage,
+    ProviderRegistrationRequest,
+    ProviderRegistrationResponse,
+    ProviderSeatsResponse,
+    ProviderUnregisterRequest,
+    ProviderUnregisterResponse,
+)
 
 
 class EventsProviderClient:
