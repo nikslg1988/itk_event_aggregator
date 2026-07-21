@@ -1,4 +1,6 @@
 import asyncio
+import os
+from dotenv import load_dotenv
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -6,11 +8,20 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from app.core.config import settings
 from app.db.base import Base
 
+load_dotenv()
+
+db_url = os.getenv("POSTGRES_CONNECTION_STRING")
+if not db_url:
+    raise ValueError("POSTGRES_CONNECTION_STRING is not set")
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+elif db_url.startswith("postgresql://") and "+asyncpg" not in db_url:
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
