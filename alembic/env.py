@@ -10,6 +10,7 @@ from app.db.base import Base
 from app.setting import DB_STRING
 
 db_url = DB_STRING
+
 if not db_url:
     raise ValueError("POSTGRES_CONNECTION_STRING is not set")
 if db_url.startswith("postgres://"):
