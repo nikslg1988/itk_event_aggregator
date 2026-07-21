@@ -1,6 +1,4 @@
 import asyncio
-import os
-from dotenv import load_dotenv
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -9,10 +7,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from app.db.base import Base
+from app.setting import DB_STRING
 
-load_dotenv()
-
-db_url = os.getenv("POSTGRES_CONNECTION_STRING")
+db_url = DB_STRING
 if not db_url:
     raise ValueError("POSTGRES_CONNECTION_STRING is not set")
 if db_url.startswith("postgres://"):
