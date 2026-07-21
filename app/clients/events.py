@@ -21,7 +21,7 @@ class EventsProviderClient:
 
     async def get_events(self, changed_at: datetime) -> ProviderEventsPage:
 
-        changed_at_str = changed_at.isoformat()
+        changed_at_str = changed_at.date().isoformat()
         response = await self.http_client.get(
             url=f"{self.base_url}/api/events/",
             params={"changed_at": changed_at_str},

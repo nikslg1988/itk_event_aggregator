@@ -30,4 +30,4 @@ class Event(Base):
     status_changed_at: Mapped[datetime] = mapped_column(nullable=False)
 
     place: Mapped["Place"] = relationship(back_populates="events")
-    ticket: Mapped["Ticket"] = relationship(back_populates="events")
+    tickets: Mapped[list["Ticket"]] = relationship(back_populates="event")
