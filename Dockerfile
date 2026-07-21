@@ -2,19 +2,20 @@
 FROM python:3.11-alpine
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV UV_LINK_MODE=copy
+RUN addgroup --system --gid 1000 appuser && \
+    adduser --system --uid 1000 --ingroup appuser appuser
 
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
 
-RUN chmod -R a+rX ./
-
 RUN uv sync --frozen --no-dev
 
 COPY . .
+
+RUN chown -R appuser:appuser /app
+
+USER appuser
 
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH=/app
