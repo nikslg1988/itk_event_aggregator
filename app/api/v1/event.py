@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/events", tags=["Events"])
 
 async def get_event_service(
     session: AsyncSession = Depends(get_session),
-    ) -> EventService:
+) -> EventService:
     repository = EventRepository(session)
     service = EventService(repository)
     return service
@@ -25,8 +25,8 @@ async def get_events(
     page: int = 1,
     page_size: int = 20,
     service: EventService = Depends(get_event_service),
-    ) -> EventListResponse:
-    
+) -> EventListResponse:
+
     return await service.get_events(
         date_from=date_from,
         page=page,

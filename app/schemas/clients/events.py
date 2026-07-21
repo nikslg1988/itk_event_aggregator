@@ -14,6 +14,7 @@ class ProviderPlace(BaseModel):
     changed_at: datetime
     created_at: datetime
 
+
 # Основная сущность
 class ProviderEvent(BaseModel):
     id: UUID
@@ -27,24 +28,29 @@ class ProviderEvent(BaseModel):
     created_at: datetime
     status_changed_at: datetime
 
+
 # Контейнер ответа API
 class ProviderEventsPage(BaseModel):
     next: str | None
     previous: str | None
     results: list[ProviderEvent]
-    
+
+
 class ProviderSeatsResponse(BaseModel):
     seats: list[str]
-    
+
+
 class ProviderRegistrationRequest(BaseModel):
     first_name: str
     last_name: str
     seat: str
     email: EmailStr
 
+
 class ProviderRegistrationResponse(BaseModel):
     ticket_id: UUID
-    
+
+
 class ProviderUnregisterRequest(BaseModel):
     ticket_id: UUID
 

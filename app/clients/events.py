@@ -18,57 +18,56 @@ class EventsProviderClient:
         self.http_client = http_client
         self.base_url = base_url
         self.api_key = api_key
-        
+
     async def get_events(self, changed_at: datetime) -> ProviderEventsPage:
-        
+
         changed_at_str = changed_at.isoformat()
         response = await self.http_client.get(
             url=f"{self.base_url}/api/events/",
             params={"changed_at": changed_at_str},
-            headers={"X-API-Key": self.api_key}
+            headers={"X-API-Key": self.api_key},
         )
-        
+
         response.raise_for_status()
-        
+
         response_data = response.json()
-        
+
         return ProviderEventsPage.model_validate(response_data)
-    
-    async def get_seats(self,
+
+    async def get_seats(
+        self,
         event_id: UUID,
-        ) -> ProviderSeatsResponse:
-        
+    ) -> ProviderSeatsResponse:
+
         response = await self.http_client.get(
             url=f"{self.base_url}/api/events/{event_id}/seats/",
             headers={"X-API-Key": self.api_key},
         )
-        
+
         response.raise_for_status()
         response_data = response.json()
         return ProviderSeatsResponse.model_validate(response_data)
 
-    async def register(self,
-                       event_id: UUID,
-                       registration: ProviderRegistrationRequest
-                       ) -> ProviderRegistrationResponse:
-        
+    async def register(
+        self, event_id: UUID, registration: ProviderRegistrationRequest
+    ) -> ProviderRegistrationResponse:
+
         response = await self.http_client.post(
             url=f"{self.base_url}/api/events/{event_id}/register/",
             headers={"X-API-Key": self.api_key},
-            json=registration.model_dump()
+            json=registration.model_dump(),
         )
-        
+
         response.raise_for_status()
-        
+
         response_data = response.json()
         return ProviderRegistrationResponse.model_validate(response_data)
-    
 
     async def unregister(
         self,
         event_id: UUID,
         unregister: ProviderUnregisterRequest,
-        ) -> ProviderUnregisterResponse:
+    ) -> ProviderUnregisterResponse:
 
         response = await self.http_client.request(
             method="DELETE",
