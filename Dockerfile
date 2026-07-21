@@ -10,11 +10,11 @@ WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
 
+RUN chmod -R a+rX ./
+
 RUN uv sync --frozen --no-dev
 
 COPY . .
-
-RUN chmod -R a+rX /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH=/app
