@@ -1,25 +1,21 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
-RUN addgroup --system --gid 1000 appuser && \
-    adduser --system --uid 1000 --ingroup appuser appuser
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV UV_LINK_MODE=copy
 
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv sync --frozen --no-cache
-
-RUN chown -R appuser:appuser /app
-
-USER appuser
+RUN uv sync --frozen --no-dev
 
 COPY . .
 
-ENV PATH="/app/.venv/bin:$PATH"
+RUN chmod -R a+rX /app
 
+ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH=/app
 
 EXPOSE 8000
