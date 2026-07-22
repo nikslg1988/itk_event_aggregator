@@ -25,6 +25,7 @@ async def register(
     request: TicketRegisterRequest,
     service: TicketService = Depends(get_ticket_service),
 ) -> TicketRegisterResponse:
+
     ticket_id = await service.register(
         event_id=event_id,
         request=request,

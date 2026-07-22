@@ -35,7 +35,7 @@ class EventsProviderClient:
 
         return ProviderEventsPage.model_validate(response_data)
 
-    async def get_seats(
+    async def get_available_seats(
         self,
         event_id: UUID,
     ) -> ProviderSeatsResponse:
