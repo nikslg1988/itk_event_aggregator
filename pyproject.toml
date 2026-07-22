@@ -12,6 +12,7 @@ dependencies = [
     "alembic",
     "httpx",
     "pydantic-settings",
+    "pydantic[email]>=2.13.4",
 ]
 
 [dependency-groups]
