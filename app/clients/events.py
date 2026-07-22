@@ -15,6 +15,7 @@ from app.schemas.clients.events import (
 
 class EventsProviderClient:
     def __init__(self, http_client: AsyncClient, base_url: str, api_key: str):
+
         self.http_client = http_client
         self.base_url = base_url
         self.api_key = api_key

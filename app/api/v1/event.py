@@ -1,22 +1,12 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.session import get_session
-from app.repositories.event import EventRepository
+from app.dependencies.dependencies import get_event_service
 from app.schemas.event import EventListResponse
 from app.services.event import EventService
 
 router = APIRouter(prefix="/api/events", tags=["Events"])
-
-
-async def get_event_service(
-    session: AsyncSession = Depends(get_session),
-) -> EventService:
-    repository = EventRepository(session)
-    service = EventService(repository)
-    return service
 
 
 @router.get("", response_model=EventListResponse)

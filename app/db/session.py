@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.setting import DB_STRING
+from app.core.setting import DB_STRING
 
 db_url = DB_STRING
 

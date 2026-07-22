@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from app.db.base import Base
-from app.setting import DB_STRING
+from app.core.setting import DB_STRING
 
 db_url = DB_STRING
 
