@@ -31,10 +31,9 @@ class TicketService:
 
     async def register(
         self,
-        event_id: UUID,
         request: TicketRegisterRequest,
     ) -> UUID:
-
+        event_id = request.event_id
         event = await self.event_repository.get_by_id(event_id)
 
         if event is None:
@@ -89,7 +88,7 @@ class TicketService:
         )
 
         await self.provider.unregister(
-            event_id=ticket.event_id,
+            event_id=ticket.ticket_id,
             unregister=provider_request,
         )
 

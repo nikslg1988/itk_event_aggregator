@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+import app.models  # noqa: F401
 from app.core.setting import DB_STRING
 
 db_url = DB_STRING

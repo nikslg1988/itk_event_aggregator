@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 
 
 class TicketRegisterRequest(BaseModel):
+    event_id: UUID
     first_name: str
     last_name: str
     email: EmailStr
