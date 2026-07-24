@@ -45,8 +45,10 @@ async def get_event_service(
 
 def get_ticket_service(
     session: AsyncSession = Depends(get_session),
-    repository: EventRepository = Depends(),
     provider: EventsProviderClient = Depends(get_events_provider),
 ) -> TicketService:
+
+    event_repository = EventRepository(session)
     ticket_repository = TicketRepository(session)
-    return TicketService(ticket_repository, repository, provider)
+
+    return TicketService(ticket_repository, event_repository, provider)
