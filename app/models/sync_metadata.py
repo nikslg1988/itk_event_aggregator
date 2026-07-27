@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import Enum, String
+from sqlalchemy import DateTime, Enum, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -19,10 +19,12 @@ class SyncMetadata(Base):
     )
 
     last_sync_time: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
         nullable=True,
     )
 
     last_changed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
         nullable=True,
     )
 
@@ -33,6 +35,6 @@ class SyncMetadata(Base):
     )
 
     last_error: Mapped[str | None] = mapped_column(
-        String(255),
+        Text,
         nullable=True,
     )

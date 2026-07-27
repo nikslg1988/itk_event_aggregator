@@ -8,8 +8,11 @@ from app.clients.events import EventsProviderClient
 from app.core.setting import EVENTS_PROVIDER_API_KEY, EVENTS_PROVIDER_BASE_URL
 from app.db.session import get_session
 from app.repositories.event import EventRepository
+from app.repositories.place import PlaceRepository
+from app.repositories.sync import SyncMetadataRepository
 from app.repositories.ticket import TicketRepository
 from app.services.event import EventService
+from app.services.sync import SyncService
 from app.services.ticket import TicketService
 
 
@@ -43,7 +46,7 @@ async def get_event_service(
     return service
 
 
-def get_ticket_service(
+async def get_ticket_service(
     session: AsyncSession = Depends(get_session),
     provider: EventsProviderClient = Depends(get_events_provider),
 ) -> TicketService:
@@ -52,3 +55,20 @@ def get_ticket_service(
     ticket_repository = TicketRepository(session)
 
     return TicketService(ticket_repository, event_repository, provider)
+
+
+async def get_sync_service(
+    session: AsyncSession = Depends(get_session),
+    provider: EventsProviderClient = Depends(get_events_provider),
+) -> SyncService:
+
+    event_repository = EventRepository(session)
+    place_repository = PlaceRepository(session)
+    sync_metadata_repository = SyncMetadataRepository(session)
+
+    return SyncService(
+        event_repository,
+        place_repository,
+        sync_metadata_repository,
+        provider,
+    )

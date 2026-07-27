@@ -89,7 +89,7 @@ class EventsProviderClient:
         response = await self.http_client.get(
             url=f"{self.base_url}/api/events/",
             params={
-                "changed_at": changed_at.isoformat(),
+                "changed_at": changed_at.date().isoformat(),
             },
             headers={
                 "X-API-Key": self.api_key,
