@@ -44,3 +44,12 @@ class EventRepository:
 
         result = await self.session.execute(query)
         return result.scalar_one()
+
+    async def create(self, event: Event) -> Event:
+        self.session.add(event)
+        await self.session.commit()
+        return event
+
+    async def update(self, event: Event) -> Event:
+        await self.session.commit()
+        return event

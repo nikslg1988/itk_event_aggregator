@@ -32,3 +32,7 @@ class PlaceRepository:
     async def delete(self, place: Place) -> None:
         await self.session.delete(place)
         await self.session.commit()
+
+    async def update(self, place: Place) -> Place:
+        await self.session.commit()
+        return place
