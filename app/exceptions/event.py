@@ -1,5 +1,6 @@
 class EventNotFoundError(Exception):
-    pass
+    def __init__(self, message: str = "Event not found"):
+        super().__init__(message)
 
 
 class EventNotPublishedError(Exception):
