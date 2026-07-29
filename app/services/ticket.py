@@ -88,7 +88,7 @@ class TicketService:
         )
 
         await self.provider.unregister(
-            event_id=ticket.ticket_id,
+            event_id=ticket.event_id,
             unregister=provider_request,
         )
 
