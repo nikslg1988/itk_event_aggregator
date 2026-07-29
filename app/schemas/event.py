@@ -21,6 +21,13 @@ class EventResponse(BaseModel):
 
 class EventListResponse(BaseModel):
     count: int
+    next: str | None
+    previous: str | None
+    results: list[EventResponse]
+
+
+class EventListResult(BaseModel):
+    count: int
     next: int | None
     previous: int | None
     results: list[EventResponse]

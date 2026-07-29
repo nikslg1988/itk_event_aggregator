@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -18,7 +18,7 @@ class EventRepository:
 
     async def get_all(
         self,
-        date_from: datetime | None = None,
+        date_from: date | None = None,
         page: int = 1,
         page_size: int = 20,
     ) -> list[Event]:
@@ -28,14 +28,14 @@ class EventRepository:
         if date_from is not None:
             query = query.where(Event.event_time >= date_from)
 
-        query = query.order_by(Event.event_time)
+        query = query.order_by(Event.event_time.asc())
         query = query.offset((page - 1) * page_size)
         query = query.limit(page_size)
 
         result = await self.session.execute(query)
         return list(result.scalars().all())
 
-    async def count(self, date_from: datetime | None = None) -> int:
+    async def count(self, date_from: date | None = None) -> int:
 
         query = select(func.count(Event.id))
 
