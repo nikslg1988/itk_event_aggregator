@@ -6,6 +6,7 @@ from app.dependencies.dependencies import get_ticket_service
 from app.schemas.ticket import (
     TicketRegisterRequest,
     TicketRegisterResponse,
+    TicketUnregisterResponse,
 )
 from app.services.ticket import TicketService
 
@@ -33,10 +34,12 @@ async def register(
 
 @router.delete(
     "/{ticket_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
 )
 async def unregister(
     ticket_id: UUID,
     service: TicketService = Depends(get_ticket_service),
-) -> None:
+) -> TicketUnregisterResponse:
     await service.unregister(ticket_id)
+
+    return TicketUnregisterResponse(success=True)

@@ -18,3 +18,7 @@ class TicketRegisterResponse(BaseModel):
 class AvailableSeatsResponse(BaseModel):
     event_id: UUID
     available_seats: list[str]
+
+
+class TicketUnregisterResponse(BaseModel):
+    success: bool
