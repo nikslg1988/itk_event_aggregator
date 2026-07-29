@@ -3,12 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.place import PlaceResponse
+
 
 class EventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    place_id: UUID
+    place: PlaceResponse
     name: str
     event_time: datetime
     registration_deadline: datetime
