@@ -3,9 +3,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
 
-from app.dependencies.dependencies import get_event_service
+from app.dependencies.dependencies import get_event_service, get_ticket_service
 from app.schemas.event import EventListResponse, EventResponse
+from app.schemas.ticket import AvailableSeatsResponse
 from app.services.event import EventService
+from app.services.ticket import TicketService
 
 router = APIRouter(prefix="/api/events", tags=["Events"])
 
@@ -48,3 +50,14 @@ async def get_event_by_id(
     result = await service.get_event_by_id(event_id)
 
     return result
+
+
+@router.get(
+    "/{event_id}/seats",
+    response_model=AvailableSeatsResponse,
+)
+async def get_available_seats(
+    event_id: UUID,
+    service: TicketService = Depends(get_ticket_service),
+) -> AvailableSeatsResponse:
+    return await service.get_available_seats(event_id)

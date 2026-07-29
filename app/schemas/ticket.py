@@ -13,3 +13,8 @@ class TicketRegisterRequest(BaseModel):
 
 class TicketRegisterResponse(BaseModel):
     ticket_id: UUID
+
+
+class AvailableSeatsResponse(BaseModel):
+    event_id: UUID
+    available_seats: list[str]

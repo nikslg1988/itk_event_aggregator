@@ -15,7 +15,7 @@ from app.schemas.clients.events import (
     ProviderRegistrationRequest,
     ProviderUnregisterRequest,
 )
-from app.schemas.ticket import TicketRegisterRequest
+from app.schemas.ticket import AvailableSeatsResponse, TicketRegisterRequest
 
 
 class TicketService:
@@ -93,3 +93,22 @@ class TicketService:
         )
 
         await self.ticket_repository.delete(ticket)
+
+    async def get_available_seats(
+        self,
+        event_id: UUID,
+    ) -> AvailableSeatsResponse:
+        event = await self.event_repository.get_by_id(event_id)
+
+        if event is None:
+            raise EventNotFoundError()
+
+        if event.status != "published":
+            raise EventNotPublishedError()
+
+        provider_response = await self.provider.get_available_seats(event_id)
+
+        return AvailableSeatsResponse(
+            event_id=event_id,
+            available_seats=provider_response.seats,
+        )
