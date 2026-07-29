@@ -81,7 +81,7 @@ class TicketService:
         ticket = await self.ticket_repository.get_by_ticket_id(ticket_id)
 
         if ticket is None:
-            raise TicketNotFoundError()
+            raise TicketNotFoundError("Ticket Not Found")
 
         provider_request = ProviderUnregisterRequest(
             ticket_id=ticket.ticket_id,
