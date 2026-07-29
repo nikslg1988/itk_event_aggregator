@@ -56,7 +56,7 @@ class EventsProviderClient:
         response = await self.http_client.post(
             url=f"{self.base_url}/api/events/{event_id}/register/",
             headers={"X-API-Key": self.api_key},
-            json=registration.model_dump(),
+            json=registration.model_dump(mode="json"),
         )
 
         response.raise_for_status()
@@ -74,7 +74,7 @@ class EventsProviderClient:
             method="DELETE",
             url=f"{self.base_url}/api/events/{event_id}/unregister/",
             headers={"X-API-Key": self.api_key},
-            json=unregister.model_dump(),
+            json=unregister.model_dump(mode="json"),
         )
         response.raise_for_status()
 
