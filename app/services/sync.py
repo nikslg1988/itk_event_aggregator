@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 
-from app.clients.events import EventsProviderClient
 from app.models.enums import SyncStatus
 from app.models.event import Event
 from app.models.place import Place
@@ -9,6 +8,7 @@ from app.repositories.event import EventRepository
 from app.repositories.place import PlaceRepository
 from app.repositories.sync import SyncMetadataRepository
 from app.schemas.clients.events import ProviderEvent, ProviderPlace
+from app.services.events_paginator import EventsPaginator
 
 
 class SyncService:
@@ -17,12 +17,12 @@ class SyncService:
         event_repository: EventRepository,
         place_repository: PlaceRepository,
         sync_metadata_repository: SyncMetadataRepository,
-        events_provider_client: EventsProviderClient,
+        events_paginator: EventsPaginator,
     ):
         self.event_repository = event_repository
         self.place_repository = place_repository
         self.sync_metadata_repository = sync_metadata_repository
-        self.events_provider_client = events_provider_client
+        self.events_paginator = events_paginator
 
     async def synchronize(self) -> None:
         metadata = await self.sync_metadata_repository.get_or_create()
@@ -34,13 +34,9 @@ class SyncService:
         try:
             changed_at = self._get_changed_at(metadata)
 
-            response = await self.events_provider_client.get_changed_events(
-                changed_at=changed_at,
-            )
-
             max_changed_at = metadata.last_changed_at
 
-            for provider_event in response.results:
+            async for provider_event in self.events_paginator.iterate(changed_at):
                 await self._process_place(provider_event.place)
                 await self._process_event(provider_event)
 

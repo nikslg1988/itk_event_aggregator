@@ -98,6 +98,12 @@ class EventsProviderClient:
 
         response.raise_for_status()
 
-        response_data = response.json()
+        return ProviderEventsPage.model_validate(response.json())
 
-        return ProviderEventsPage.model_validate(response_data)
+    async def get_events_page(self, url: str) -> ProviderEventsPage:
+
+        response = await self.http_client.get(url=url)
+
+        response.raise_for_status()
+
+        return ProviderEventsPage.model_validate(response.json())
