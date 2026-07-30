@@ -102,7 +102,9 @@ class EventsProviderClient:
 
     async def get_events_page(self, url: str) -> ProviderEventsPage:
 
-        response = await self.http_client.get(url=url)
+        response = await self.http_client.get(
+            url=url, headers={"X-API-Key": self.api_key}
+        )
 
         response.raise_for_status()
 

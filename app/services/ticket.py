@@ -1,6 +1,7 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
+from app.cache.seat_cache import SeatCache
 from app.clients.events import EventsProviderClient
 from app.exceptions.event import (
     EventNotFoundError,
@@ -24,10 +25,13 @@ class TicketService:
         ticket_repository: TicketRepository,
         event_repository: EventRepository,
         provider: EventsProviderClient,
+        seat_cache: SeatCache,
     ):
+
         self.ticket_repository = ticket_repository
         self.event_repository = event_repository
         self.provider = provider
+        self.seat_cache = seat_cache
 
     async def register(
         self,
@@ -98,6 +102,7 @@ class TicketService:
         self,
         event_id: UUID,
     ) -> AvailableSeatsResponse:
+
         event = await self.event_repository.get_by_id(event_id)
 
         if event is None:
@@ -106,9 +111,13 @@ class TicketService:
         if event.status != "published":
             raise EventNotPublishedError()
 
-        provider_response = await self.provider.get_available_seats(event_id)
+        response = self.seat_cache.get(event_id)
+
+        if response is None:
+            response = await self.provider.get_available_seats(event_id)
+            self.seat_cache.set(event_id, response)
 
         return AvailableSeatsResponse(
             event_id=event_id,
-            available_seats=provider_response.seats,
+            available_seats=response.seats,
         )

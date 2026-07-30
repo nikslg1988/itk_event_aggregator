@@ -4,6 +4,7 @@ from fastapi import Depends
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.cache.seat_cache import SeatCache
 from app.clients.events import EventsProviderClient
 from app.core.setting import EVENTS_PROVIDER_API_KEY, EVENTS_PROVIDER_BASE_URL
 from app.db.session import get_session
@@ -12,12 +13,19 @@ from app.repositories.place import PlaceRepository
 from app.repositories.sync import SyncMetadataRepository
 from app.repositories.ticket import TicketRepository
 from app.services.event import EventService
+from app.services.events_paginator import EventsPaginator
 from app.services.sync import SyncService
 from app.services.ticket import TicketService
 
+seat_cache = SeatCache()
+
+
+def get_seat_cache() -> SeatCache:
+    return seat_cache
+
 
 async def get_http_client() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient() as client:
+    async with AsyncClient(follow_redirects=True) as client:
         yield client
 
 
@@ -49,17 +57,29 @@ async def get_event_service(
 async def get_ticket_service(
     session: AsyncSession = Depends(get_session),
     provider: EventsProviderClient = Depends(get_events_provider),
+    seat_cache: SeatCache = Depends(get_seat_cache),
 ) -> TicketService:
 
     event_repository = EventRepository(session)
     ticket_repository = TicketRepository(session)
 
-    return TicketService(ticket_repository, event_repository, provider)
+    return TicketService(
+        ticket_repository,
+        event_repository,
+        provider,
+        seat_cache,
+    )
 
 
-async def get_sync_service(
-    session: AsyncSession = Depends(get_session),
+def get_events_paginator(
     provider: EventsProviderClient = Depends(get_events_provider),
+) -> EventsPaginator:
+    return EventsPaginator(provider)
+
+
+def get_sync_service(
+    session: AsyncSession = Depends(get_session),
+    paginator: EventsPaginator = Depends(get_events_paginator),
 ) -> SyncService:
 
     event_repository = EventRepository(session)
@@ -70,5 +90,5 @@ async def get_sync_service(
         event_repository,
         place_repository,
         sync_metadata_repository,
-        provider,
+        paginator,
     )
