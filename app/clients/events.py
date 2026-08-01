@@ -20,21 +20,6 @@ class EventsProviderClient:
         self.base_url = base_url
         self.api_key = api_key
 
-    async def get_events(self, changed_at: datetime) -> ProviderEventsPage:
-
-        changed_at_str = changed_at.date().isoformat()
-        response = await self.http_client.get(
-            url=f"{self.base_url}/api/events/",
-            params={"changed_at": changed_at_str},
-            headers={"X-API-Key": self.api_key},
-        )
-
-        response.raise_for_status()
-
-        response_data = response.json()
-
-        return ProviderEventsPage.model_validate(response_data)
-
     async def get_available_seats(
         self,
         event_id: UUID,
