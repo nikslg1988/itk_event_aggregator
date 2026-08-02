@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
 
+import httpx
+
+from app.exceptions.event import EventProviderError
 from app.models.enums import SyncStatus
 from app.models.event import Event
 from app.models.place import Place
@@ -35,13 +38,18 @@ class SyncService:
             changed_at = self._get_changed_at(metadata)
 
             max_changed_at = metadata.last_changed_at
+            try:
+                async for provider_event in self.events_paginator.iterate(changed_at):
+                    await self._process_place(provider_event.place)
+                    await self._process_event(provider_event)
 
-            async for provider_event in self.events_paginator.iterate(changed_at):
-                await self._process_place(provider_event.place)
-                await self._process_event(provider_event)
-
-                if max_changed_at is None or provider_event.changed_at > max_changed_at:
-                    max_changed_at = provider_event.changed_at
+                    if (
+                        max_changed_at is None
+                        or provider_event.changed_at > max_changed_at
+                    ):
+                        max_changed_at = provider_event.changed_at
+            except httpx.HTTPStatusError as exc:
+                raise EventProviderError() from exc
 
             metadata.last_changed_at = max_changed_at
             metadata.last_sync_time = datetime.now(timezone.utc)
@@ -55,7 +63,8 @@ class SyncService:
         finally:
             await self.sync_metadata_repository.update(metadata)
 
-    def _get_changed_at(self, metadata: SyncMetadata) -> datetime:
+    @staticmethod
+    def _get_changed_at(metadata: SyncMetadata) -> datetime:
         if metadata.last_changed_at is None:
             return datetime(2000, 1, 1, tzinfo=timezone.utc)
 

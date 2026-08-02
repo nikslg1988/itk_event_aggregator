@@ -5,6 +5,7 @@ from uuid import uuid4
 import pytest
 
 from app.clients.events import EventsProviderClient
+from app.models.enums import EventStatus
 from app.schemas.clients.events import (
     ProviderEvent,
     ProviderEventsPage,
@@ -62,7 +63,7 @@ def provider_event(provider_place, now):
         place=provider_place,
         event_time=now,
         registration_deadline=now,
-        status="published",
+        status=EventStatus.PUBLISHED,  # TODO
         number_of_visitors=100,
         changed_at=now,
         created_at=now,
@@ -124,3 +125,10 @@ def provider_unregister_response():
 @pytest.fixture
 def events_provider_client():
     return AsyncMock(spec=EventsProviderClient)
+
+
+@pytest.fixture
+def provider_unregistration_request() -> ProviderUnregisterRequest:
+    return ProviderUnregisterRequest(
+        ticket_id=uuid4(),
+    )

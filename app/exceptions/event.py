@@ -1,11 +1,18 @@
 class EventNotFoundError(Exception):
-    def __init__(self, message: str = "Event not found"):
-        super().__init__(message)
+    def __init__(self):
+        super().__init__("Event not found")
 
 
 class EventNotPublishedError(Exception):
-    pass
+    def __init__(self):
+        super().__init__("Registration is not published")
 
 
 class EventRegistrationClosedError(Exception):
-    pass
+    def __init__(self):
+        super().__init__("Registration is closed")
+
+
+class EventProviderError(Exception):
+    def __init__(self):
+        super().__init__("External events provider is unavailable")

@@ -216,4 +216,8 @@ External Event Provider
 
 ## Статус проекта
 
+<<<<<<< HEAD
 Проект находится в активной разработке.
+=======
+Проект находится в активной разработке.
+>>>>>>> 84b9b1d (refactor: handle provider errors and improve test coverage)

@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import uuid4
 
+import httpx
 import pytest
 
 
@@ -124,3 +125,120 @@ async def test_unregister(
     )
 
     assert result == provider_unregister_response
+
+
+@pytest.mark.asyncio
+async def test_get_available_seats_http_error(
+    client,
+    http_client,
+    response,
+):
+    # Arrange
+    event_id = uuid4()
+    request = httpx.Request("GET", f"https://test.api/api/events/{event_id}/seats/")
+    http_response = httpx.Response(status_code=500, request=request)
+    response.raise_for_status.side_effect = httpx.HTTPStatusError(
+        "Internal Server Error",
+        request=request,
+        response=http_response,
+    )
+    http_client.get.return_value = response
+
+    # Act / Assert
+    with pytest.raises(httpx.HTTPStatusError):
+        await client.get_available_seats(event_id)
+
+    http_client.get.assert_awaited_once_with(
+        url=f"https://test.api/api/events/{event_id}/seats/",
+        headers={"X-API-Key": "test_api_key"},
+    )
+    response.raise_for_status.assert_called_once_with()
+
+
+@pytest.mark.asyncio
+async def test_register_http_error(
+    client,
+    http_client,
+    response,
+    provider_registration_request,
+):
+    # Arrange
+    event_id = uuid4()
+
+    request = httpx.Request(
+        "POST",
+        f"https://test.api/api/events/{event_id}/register/",
+    )
+
+    http_response = httpx.Response(
+        status_code=500,
+        request=request,
+    )
+
+    response.raise_for_status.side_effect = httpx.HTTPStatusError(
+        "Internal Server Error",
+        request=request,
+        response=http_response,
+    )
+
+    http_client.post.return_value = response
+
+    # Act / Assert
+    with pytest.raises(httpx.HTTPStatusError):
+        await client.register(
+            event_id,
+            provider_registration_request,
+        )
+
+    http_client.post.assert_awaited_once_with(
+        url=f"https://test.api/api/events/{event_id}/register/",
+        headers={"X-API-Key": "test_api_key"},
+        json=provider_registration_request.model_dump(mode="json"),
+    )
+
+    response.raise_for_status.assert_called_once_with()
+
+
+@pytest.mark.asyncio
+async def test_unregister_http_error(
+    client,
+    http_client,
+    response,
+    provider_unregistration_request,
+):
+    # Arrange
+    event_id = uuid4()
+
+    request = httpx.Request(
+        "DELETE",
+        f"https://test.api/api/events/{event_id}/unregister/",
+    )
+
+    http_response = httpx.Response(
+        status_code=500,
+        request=request,
+    )
+
+    response.raise_for_status.side_effect = httpx.HTTPStatusError(
+        "Internal Server Error",
+        request=request,
+        response=http_response,
+    )
+
+    http_client.request.return_value = response
+
+    # Act / Assert
+    with pytest.raises(httpx.HTTPStatusError):
+        await client.unregister(
+            event_id,
+            provider_unregistration_request,
+        )
+
+    http_client.request.assert_awaited_once_with(
+        method="DELETE",
+        url=f"https://test.api/api/events/{event_id}/unregister/",
+        headers={"X-API-Key": "test_api_key"},
+        json=provider_unregistration_request.model_dump(mode="json"),
+    )
+
+    response.raise_for_status.assert_called_once_with()

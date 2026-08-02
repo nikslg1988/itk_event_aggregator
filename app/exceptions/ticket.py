@@ -1,5 +1,6 @@
 class TicketNotFoundError(Exception):
-    pass
+    def __init__(self, seat: str):
+        super().__init__("Ticket not found")
 
 
 class SeatUnavailableError(Exception):

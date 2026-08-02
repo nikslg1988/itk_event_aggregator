@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
+from app.models.enums import EventStatus
+
 
 # Вложенные объекты
 class ProviderPlace(BaseModel):
@@ -22,7 +24,7 @@ class ProviderEvent(BaseModel):
     place: ProviderPlace
     event_time: datetime
     registration_deadline: datetime
-    status: str
+    status: EventStatus
     number_of_visitors: int
     changed_at: datetime
     created_at: datetime

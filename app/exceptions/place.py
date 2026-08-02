@@ -1,7 +1,8 @@
 class PlaceAlreadyExistsError(Exception):
-    def __init__(self):
-        pass
+    def __init__(self, seat: str):
+        super().__init__("Place already exsist")
 
 
 class PlaceNotFoundError(Exception):
-    pass
+    def __init__(self, seat: str):
+        super().__init__("Place not found")

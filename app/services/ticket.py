@@ -1,14 +1,18 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
+import httpx
+
 from app.cache.seat_cache import SeatCache
 from app.clients.events import EventsProviderClient
 from app.exceptions.event import (
     EventNotFoundError,
     EventNotPublishedError,
+    EventProviderError,
     EventRegistrationClosedError,
 )
 from app.exceptions.ticket import SeatUnavailableError, TicketNotFoundError
+from app.models.enums import EventStatus
 from app.models.ticket import Ticket
 from app.repositories.event import EventRepository
 from app.repositories.ticket import TicketRepository
@@ -41,15 +45,15 @@ class TicketService:
         event = await self.event_repository.get_by_id(event_id)
 
         if event is None:
-            raise EventNotFoundError("Event Not Found")
+            raise EventNotFoundError()
 
-        if event.status != "published":
-            raise EventNotPublishedError("Event is not available for registration")
+        if event.status != EventStatus.PUBLISHED:
+            raise EventNotPublishedError()
 
         now = datetime.now(UTC)
 
         if now > event.registration_deadline:
-            raise EventRegistrationClosedError("Registration is Closed")
+            raise EventRegistrationClosedError()
 
         available_seats = await self.provider.get_available_seats(event_id)
 
@@ -63,10 +67,13 @@ class TicketService:
             seat=request.seat,
         )
 
-        provider_response = await self.provider.register(
-            event_id=event_id,
-            registration=provider_request,
-        )
+        try:
+            provider_response = await self.provider.register(
+                event_id=event_id,
+                registration=provider_request,
+            )
+        except httpx.HTTPStatusError as exc:
+            raise EventProviderError() from exc
 
         ticket = Ticket(
             ticket_id=provider_response.ticket_id,
@@ -90,11 +97,13 @@ class TicketService:
         provider_request = ProviderUnregisterRequest(
             ticket_id=ticket.ticket_id,
         )
-
-        await self.provider.unregister(
-            event_id=ticket.event_id,
-            unregister=provider_request,
-        )
+        try:
+            await self.provider.unregister(
+                event_id=ticket.event_id,
+                unregister=provider_request,
+            )
+        except httpx.HTTPStatusError as exc:
+            raise EventProviderError() from exc
 
         await self.ticket_repository.delete(ticket)
 
@@ -108,13 +117,16 @@ class TicketService:
         if event is None:
             raise EventNotFoundError()
 
-        if event.status != "published":
+        if event.status != EventStatus.PUBLISHED:
             raise EventNotPublishedError()
 
         response = self.seat_cache.get(event_id)
 
         if response is None:
-            response = await self.provider.get_available_seats(event_id)
+            try:
+                response = await self.provider.get_available_seats(event_id)
+            except httpx.HTTPStatusError as exc:
+                raise EventProviderError() from exc
             self.seat_cache.set(event_id, response)
 
         return AvailableSeatsResponse(

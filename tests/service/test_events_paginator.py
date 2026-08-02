@@ -2,9 +2,11 @@ from datetime import datetime
 from unittest.mock import AsyncMock
 from uuid import uuid4
 
+import httpx
 import pytest
 
 from app.clients.events import EventsProviderClient
+from app.models.enums import EventStatus
 from app.schemas.clients.events import ProviderEvent, ProviderEventsPage, ProviderPlace
 from app.services.events_paginator import EventsPaginator
 
@@ -56,7 +58,7 @@ async def test_iterate_multiple_pages():
         place=place,
         event_time=now,
         registration_deadline=now,
-        status="PUBLISHED",
+        status=EventStatus.PUBLISHED,
         number_of_visitors=100,
         changed_at=now,
         created_at=now,
@@ -69,7 +71,7 @@ async def test_iterate_multiple_pages():
         place=place,
         event_time=now,
         registration_deadline=now,
-        status="PUBLISHED",
+        status=EventStatus.PUBLISHED,
         number_of_visitors=100,
         changed_at=now,
         created_at=now,
@@ -82,7 +84,7 @@ async def test_iterate_multiple_pages():
         place=place,
         event_time=now,
         registration_deadline=now,
-        status="PUBLISHED",
+        status=EventStatus.PUBLISHED,
         number_of_visitors=100,
         changed_at=now,
         created_at=now,
@@ -153,3 +155,34 @@ async def test_iterate_empty_page():
     events_provider_client.get_events_page.assert_not_awaited()
 
     assert result == []
+
+
+@pytest.mark.asyncio
+async def test_iterate_http_error():
+    # Arrange
+    events_provider_client = AsyncMock(spec=EventsProviderClient)
+    paginator = EventsPaginator(events_provider_client)
+    changed_at = datetime(2026, 8, 1)
+    request = httpx.Request(
+        "GET",
+        "https://test.api/api/events/",
+    )
+
+    http_response = httpx.Response(
+        status_code=500,
+        request=request,
+    )
+
+    events_provider_client.get_changed_events.side_effect = httpx.HTTPStatusError(
+        "Internal Server Error",
+        request=request,
+        response=http_response,
+    )
+    # Act / Assert
+    with pytest.raises(httpx.HTTPStatusError):
+        async for _ in paginator.iterate(changed_at):
+            pass
+
+    events_provider_client.get_changed_events.assert_awaited_once_with(
+        changed_at,
+    )
