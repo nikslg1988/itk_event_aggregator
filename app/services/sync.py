@@ -6,7 +6,6 @@ from app.exceptions.event import EventProviderError
 from app.models.enums import SyncStatus
 from app.models.event import Event
 from app.models.place import Place
-from app.models.sync_metadata import SyncMetadata
 from app.repositories.event import EventRepository
 from app.repositories.place import PlaceRepository
 from app.repositories.sync import SyncMetadataRepository
@@ -35,7 +34,9 @@ class SyncService:
         await self.sync_metadata_repository.update(metadata)
 
         try:
-            changed_at = self._get_changed_at(metadata)
+            changed_at = metadata.last_changed_at or datetime(
+                2000, 1, 1, tzinfo=timezone.utc
+            )
 
             max_changed_at = metadata.last_changed_at
             try:
@@ -62,13 +63,6 @@ class SyncService:
 
         finally:
             await self.sync_metadata_repository.update(metadata)
-
-    @staticmethod
-    def _get_changed_at(metadata: SyncMetadata) -> datetime:
-        if metadata.last_changed_at is None:
-            return datetime(2000, 1, 1, tzinfo=timezone.utc)
-
-        return metadata.last_changed_at
 
     async def _process_place(
         self,

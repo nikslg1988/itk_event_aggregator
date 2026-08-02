@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import urljoin
 from uuid import UUID
 
 from httpx import AsyncClient
@@ -26,7 +27,7 @@ class EventsProviderClient:
     ) -> ProviderSeatsResponse:
 
         response = await self.http_client.get(
-            url=f"{self.base_url}/api/events/{event_id}/seats/",
+            url=urljoin(self.base_url, f"api/events/{event_id}/seats/"),
             headers={"X-API-Key": self.api_key},
         )
 
@@ -39,7 +40,7 @@ class EventsProviderClient:
     ) -> ProviderRegistrationResponse:
 
         response = await self.http_client.post(
-            url=f"{self.base_url}/api/events/{event_id}/register/",
+            url=urljoin(self.base_url, f"/api/events/{event_id}/register/"),
             headers={"X-API-Key": self.api_key},
             json=registration.model_dump(mode="json"),
         )
@@ -57,7 +58,7 @@ class EventsProviderClient:
 
         response = await self.http_client.request(
             method="DELETE",
-            url=f"{self.base_url}/api/events/{event_id}/unregister/",
+            url=urljoin(self.base_url, f"/api/events/{event_id}/unregister/"),
             headers={"X-API-Key": self.api_key},
             json=unregister.model_dump(mode="json"),
         )
@@ -72,7 +73,7 @@ class EventsProviderClient:
     ) -> ProviderEventsPage:
 
         response = await self.http_client.get(
-            url=f"{self.base_url}/api/events/",
+            url=urljoin(self.base_url, "/api/events/"),
             params={
                 "changed_at": changed_at.date().isoformat(),
             },
