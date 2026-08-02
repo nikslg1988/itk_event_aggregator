@@ -45,6 +45,6 @@ class EventService:
         event = await self.repository.get_by_id(event_id)
 
         if event is None:
-            raise EventNotFoundError("Event Not Found")
+            raise EventNotFoundError()
 
         return EventResponse.model_validate(event)

@@ -11,3 +11,5 @@ class SyncStatus(StrEnum):
 class EventStatus(StrEnum):
     NEW = "new"
     PUBLISHED = "published"
+    REGISTRATION_CLOSED = "registration_closed"
+    FINISHED = "finished"
